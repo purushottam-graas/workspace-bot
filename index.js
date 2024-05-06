@@ -3,7 +3,7 @@ const app = express();
 const port = 8080;
 
 // Your webhook secret
-const secret = 'purushottam-graas'; // Change this to your actual webhook secret
+const secret = 'purushottamgraas'; // Change this to your actual webhook secret
 const path = '/webhooks/github'; // Endpoint to receive webhook events
 
 // Use dynamic import to load @octokit/webhooks
