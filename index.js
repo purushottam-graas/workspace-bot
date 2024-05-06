@@ -1,16 +1,15 @@
-const express = require('express');
-const app = express();
-const port = 8080;
-
-// Your webhook secret
-const secret = 'purushottamgraas'; // Change this to your actual webhook secret
-const path = '/webhooks/github'; // Endpoint to receive webhook events
-
-// Use dynamic import to load @octokit/webhooks
 import('@octokit/webhooks').then(({ createEventHandler }) => {
+    const express = require('express');
+    const app = express();
+    const port = process.env.PORT || 8080;
+
+    // Your webhook secret
+    const secret = 'purushottamgraas'; // Change this to your actual webhook secret
+    const path = '/webhooks/github'; // Endpoint to receive webhook events
+
     // Parse JSON bodies for POST requests
     app.use(express.json());
-    
+
     // Define webhookHandler within the scope of the dynamic import's .then() callback
     const webhookHandler = createEventHandler({ secret });
 
@@ -19,6 +18,7 @@ import('@octokit/webhooks').then(({ createEventHandler }) => {
         try {
             webhookHandler(req, res, () => {
                 console.log('Webhook event handled successfully.');
+                res.status(200).send('Webhook received successfully');
             });
         } catch (error) {
             console.error('Error handling webhook event:', error);
@@ -26,11 +26,10 @@ import('@octokit/webhooks').then(({ createEventHandler }) => {
         }
     });
 
-    // Listen to webhook events
-    webhookHandler.on('pull_request', ({ id, name, payload }) => {
-        const { action, pull_request } = payload;
-        // Forward PR message to workspace bot here
-        console.log(`Received PR event: ${action} - ${pull_request.title}`);
+    // Listen to all webhook events
+    webhookHandler.onAny(({ id, name, payload }) => {
+        // Log the event name and payload
+        console.log(`Received ${name} event:`, payload);
     });
 
     // Define a route handler for the root route
