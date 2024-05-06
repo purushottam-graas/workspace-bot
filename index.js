@@ -10,7 +10,7 @@ const path = '/webhooks/github'; // Endpoint to receive webhook events
 import('@octokit/webhooks').then(({ createEventHandler }) => {
     // Parse JSON bodies for POST requests
     app.use(express.json());
-
+    
     // Define webhookHandler within the scope of the dynamic import's .then() callback
     const webhookHandler = createEventHandler({ secret });
 
@@ -31,6 +31,11 @@ import('@octokit/webhooks').then(({ createEventHandler }) => {
         const { action, pull_request } = payload;
         // Forward PR message to workspace bot here
         console.log(`Received PR event: ${action} - ${pull_request.title}`);
+    });
+    app.get('/', (req, res) => {
+        res.send('hi')
+    
+        res.status(200).send('Webhook received successfully');
     });
 // test
 app.post('/webhooks/github', (req, res) => {
