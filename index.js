@@ -21,7 +21,7 @@ import('@octokit/webhooks').then(({ createEventHandler }) => {
                 res.status(200).send('Webhook received successfully');
             });
         } catch (error) {
-            console.error('Error handling webhook event:', error);
+            console.log('Error handling webhook event:', error);
             res.status(500).send('Internal Server Error');
         }
     });
