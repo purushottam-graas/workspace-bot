@@ -1,24 +1,42 @@
 const express = require('express');
-const { createEventHandler } = require('@octokit/webhooks');
-
 const app = express();
 const port = 8080;
 
-const secret = 'your_webhook_secret'; // Change this to your actual webhook secret
+// Your webhook secret
+const secret = 'purushottam-graas'; // Change this to your actual webhook secret
 const path = '/webhooks/github'; // Endpoint to receive webhook events
-const webhookHandler = createEventHandler({ secret });
 
-// Handle incoming webhook events
-app.post(path, webhookHandler.middleware);
+// Use dynamic import to load @octokit/webhooks
+import('@octokit/webhooks').then(({ createEventHandler }) => {
+    // Parse JSON bodies for POST requests
+    app.use(express.json());
 
-// Listen to webhook events
-webhookHandler.on('pull_request', ({ id, name, payload }) => {
-    const { action, pull_request } = payload;
-    // Forward PR message to workspace bot here
-    console.log(`Received PR event: ${action} - ${pull_request.title}`);
-});
+    // Define webhookHandler within the scope of the dynamic import's .then() callback
+    const webhookHandler = createEventHandler({ secret });
 
-// Start the server
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    // Handle incoming webhook events
+    app.post(path, (req, res) => {
+        try {
+            webhookHandler(req, res, () => {
+                console.log('Webhook event handled successfully.');
+            });
+        } catch (error) {
+            console.error('Error handling webhook event:', error);
+            res.status(500).send('Internal Server Error');
+        }
+    });
+
+    // Listen to webhook events
+    webhookHandler.on('pull_request', ({ id, name, payload }) => {
+        const { action, pull_request } = payload;
+        // Forward PR message to workspace bot here
+        console.log(`Received PR event: ${action} - ${pull_request.title}`);
+    });
+
+    // Start the server
+    app.listen(port, () => {
+        console.log(`Server is running on http://localhost:${port}`);
+    });
+}).catch(err => {
+    console.error('Failed to load @octokit/webhooks:', err);
 });
