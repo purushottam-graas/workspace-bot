@@ -32,12 +32,12 @@ import('@octokit/webhooks').then(({ createEventHandler }) => {
         // Forward PR message to workspace bot here
         console.log(`Received PR event: ${action} - ${pull_request.title}`);
     });
-    app.get('/', (req, res) => {
-        res.send('hi')
-        console.log('jdskfjlaskjfd;lkj');
-        res.status(200).send('Webhook received successfully');
-    });
 
+    // Define a route handler for the root route
+    app.get('/', (req, res) => {
+        console.log('Received GET request');
+        res.send('Hello, World!');
+    });
 
     // Start the server
     app.listen(port, () => {
