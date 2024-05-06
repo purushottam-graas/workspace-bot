@@ -34,16 +34,10 @@ import('@octokit/webhooks').then(({ createEventHandler }) => {
     });
     app.get('/', (req, res) => {
         res.send('hi')
-    
+        console.log('jdskfjlaskjfd;lkj');
         res.status(200).send('Webhook received successfully');
     });
-// test
-app.post('/webhooks/github', (req, res) => {
-    res.send(req.body)
-    // Process the incoming webhook payload here
-    console.log('Received webhook payload:', req.body);
-    res.status(200).send('Webhook received successfully');
-});
+
 
     // Start the server
     app.listen(port, () => {
